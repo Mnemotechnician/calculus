@@ -1,0 +1,9 @@
+name: "kmmt"
+description: "My own template for mindustry mods. Written in kotlin and uses kotlin dsl.\n\nIf you're viewing this mod via mod browser, do not install this. This mod doesn't add anything to the game, nor does it change anything."
+displayName: "[Kotlin] Mindustry Mod Template"
+author: "Мнемотехник"
+minGameVersion: "135"
+version: "1.0"
+
+main: "com.github.mnemotechnician.kmmt.ExampleMod"
+

@@ -1,0 +1,28 @@
+on: [push, workflow_dispatch]
+name: Building
+
+jobs:
+  building:
+    runs-on: ubuntu-latest
+    
+    env:
+      jarName: compiled-mod
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Add build tools to the $PATH
+        run: echo "${ANDROID_HOME}/build-tools/30.0.1" >> $GITHUB_PATH
+      
+      - name: Compile the mod
+        run: |
+          chmod +x ./gradlew
+          .gradlew jarAndroid
+        
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}-zipped
+          path: mod-src/build/libs/${{ jarName }}-any-platform.jar
+        
