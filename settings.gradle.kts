@@ -1,2 +1,2 @@
-rootProject.name = "kotlin-mindustry-mod-template"
+rootProject.name = "calculus"
 include("mod-src")

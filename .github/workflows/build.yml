@@ -5,9 +5,6 @@ jobs:
   building:
     runs-on: ubuntu-latest
     
-    env:
-      jarName: compiled-mod
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -18,11 +15,11 @@ jobs:
       - name: Compile the mod
         run: |
           chmod +x ./gradlew
-          .gradlew jarAndroid
+          ./gradlew release
         
       - name: Upload the artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ github.event.repository.name }}-zipped
-          path: mod-src/build/libs/${{ jarName }}-any-platform.jar
+          path: mod-src/build/libs/calculus-any-platform.jar
         

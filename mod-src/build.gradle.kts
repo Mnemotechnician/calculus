@@ -1,22 +1,9 @@
-/*
- * This file allows you to configure the compilation process of your mod
- * There's several comments that you should read & follow in order to make everything work correctly
- */
-
 plugins {
-	id("org.jetbrains.kotlin.jvm") version "1.6.10"
-	
-	/**
-	 * Uncomment this line and the "publications" block below if you want to publish to maven. 
-	 * Normally you don't need that unless you're creating a library.
-	*/
-	//`maven-publish`
+	kotlin("jvm") version "1.6.10"
 }
 
-/** The mindustry version this mod will be compiled for. You may want to use another version, e.g. "v126" or "v145" (when it'll come out) */
 val mindustryVersion = "v135"
-/** The output jar files will contain this string in their names. If you're going to modify it, you should also modify the name in project_dir/.github/workflows/build.yml */
-val jarName = "compiled-mod"
+val jarName = "calculus"
 
 repositories {
 	mavenCentral()
@@ -24,39 +11,15 @@ repositories {
 }
 
 dependencies {
-	/*
-	 * You can add your mod dependencies in this block.
-	 * NEVER ADD MINDUSTRY, ARC AND NON-LIBRARY MODS AS IMPLEMENTATION DEPENDENCIES! Use compileOnly instead (and add a dependency in mod.hjson if it's a mod)
-	*/
-	implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation(kotlin("stdlib-jdk8"))
 	
 	compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
 	compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion")
 	
-	//example of a library dependency. if you don't need it, remove this line.
-	//(note: this is not a mod, rather a library for mindustry mods, thus it should be added as an implementation)
-	implementation("com.github.mnemotechnician:mkui:snapshot-4")
+	implementation("com.github.mnemotechnician:mkui:11")
+	implementation(files("../lib/Autoupdate-lib.jar"))
 }
 
-/*
- * Read the comment in "plugins" block.
-
-publishing {
-	publications {
-		create<MavenPublication>("maven") {
-			groupId = "com.github.YOUR_GITHUB_USERNAME" //replace these with your username/reponame
-			artifactId = "YOUR_GITHUB_REPO_NAME"
-			version = "1.0"
-
-			from(components["java"])
-		}
-	}
-}
-
-*/
-
-/** Android-specific stuff. Do not modify unless you're 100% sure you know what you're doing! If you break this task, mobile users won't be able to use your mod!*/
 task("jarAndroid") {
 	dependsOn("jar")
 	
@@ -97,7 +60,6 @@ task("jarAndroid") {
 	}
 }
 
-/** Merges the dektop and android jar files into a multiplatform jar file */
 task<Jar>("release") {
 	dependsOn("jarAndroid")
 	
