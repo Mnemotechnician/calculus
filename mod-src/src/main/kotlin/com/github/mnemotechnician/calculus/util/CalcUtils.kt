@@ -1,6 +1,6 @@
 package com.github.mnemotechnician.calculus.util
 
-/** Creates a string containing the integer part of the number and up to $digit digits of the decimal part. The argument must be > 0. */
+/** Creates a string containing the integer part of the number and up to $digits digits of the decimal part. The argument must be > 0. */
 fun Float.toFixed(digits: Int) = buildString {
 	if (this@toFixed < 0) append('-')
 	
