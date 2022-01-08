@@ -10,6 +10,13 @@ class MasterWindows : Window() {
 	
 	override fun onCreate() {
 		TODO("master window that will allow the user to open all other windows")
+		
+		
+	}
+	
+	/** Adds a button that allows to create new windows of specified type */
+	fun addWindow() {
+		TODO("window adding")
 	}
 	
 }

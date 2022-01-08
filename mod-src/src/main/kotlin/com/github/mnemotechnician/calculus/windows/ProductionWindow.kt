@@ -40,6 +40,8 @@ open class ProductionWindow : Window() {
 		mineableItems = Vars.content.blocks().map { it.itemDrop }.asSet()
 		
 		table.apply {
+			defaults().height(350f)
+			
 			//items
 			addTable {
 				addLabel("Item").scaleFont(fontScale).row()
@@ -58,7 +60,7 @@ open class ProductionWindow : Window() {
 						}
 					}
 				}.growY()
-			}.height(350f)
+			}
 			
 			vsplitter()
 			
@@ -70,7 +72,7 @@ open class ProductionWindow : Window() {
 					top()
 					blocksTable = this
 				}.growY()
-			}.growY()
+			}
 			
 			vsplitter()
 			
@@ -106,10 +108,10 @@ open class ProductionWindow : Window() {
 				hsplitter()
 				
 				scrollPane {
-					top().defaults().growX()
+					top().defaults().growX().top()
 					statsTable = this
 				}.grow()
-			}.growY()
+			}
 		}
 	}
 	
@@ -150,14 +152,39 @@ open class ProductionWindow : Window() {
 					if (stack != null) {
 						statsCategory(block) {
 							statEntry("X") {
+								defaults().growX().left()
+								
 								val maxSpeed = (60f * timeScale) / block.craftTime
-								addLabel("Produces ${maxSpeed.toFixed(2 * stack.amount)} ${item.emoji()}/sec").scaleFont(fontScale).row()
+								addLabel("Produces ${(maxSpeed * stack.amount).toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).row()
 								
 								addLabel("Consumes:").scaleFont(fontScale).row()
 								
 								addTable {
 									displayCons(block, maxSpeed)
-								}.marginLeft(10f)
+								}.growX().marginLeft(20f)
+							}
+						}
+					}
+				} else if (block is Separator) {
+					//separator and disassembler
+					val output = block.results.find { it.item == item }
+					val totalAmount = block.results.fold(0) { v, stack -> v + stack.amount } //total amount of outputted items
+					
+					if (output != null) {
+						statsCategory(block) {
+							statEntry("X") {
+								defaults().growX().left()
+								
+								val maxSpeed = (output.amount * 60 * timeScale) / (block.craftTime * totalAmount)
+								addLabel("Produces around ${maxSpeed.toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).row()
+								
+								addLabel("Chance: ${((output.amount * 100f) / totalAmount).toFixed(1)}%, ${output.amount}/$totalAmount").scaleFont(fontScale).row()
+								
+								addLabel("Consumes:").scaleFont(fontScale).row()
+								
+								addTable {
+									displayCons(block, maxSpeed)
+								}.growX().marginLeft(20f)
 							}
 						}
 					}
@@ -188,7 +215,7 @@ open class ProductionWindow : Window() {
 	protected inline fun Table.statEntry(left: String, crossinline constructor: Table.() -> Unit) = addTable {
 		left()
 		
-		addLabel(left).scaleFont(fontScale).center()
+		addLabel(left).width(20f).scaleFont(fontScale).center()
 		
 		vsplitter(Color.gray)
 		
@@ -196,17 +223,25 @@ open class ProductionWindow : Window() {
 			left()
 			constructor()
 		}.growX()
-	}.also { it.growX().row() };
+	}.also { it.left().growX().marginBottom(5f).row() };
 	
 	/** Utility function: displays block's non-optional cons on the table */
-	protected fun Table.displayCons(block: Block, maxSpeed: Float) {
+	protected fun Table.displayCons(block: Block, maxSpeed: Float, ignoreOptional: Boolean = true) {
+		left()
+		
 		block.consumes.all().forEach {
-			if (it.isOptional) return@forEach
+			if (ignoreOptional && it.isOptional) return@forEach
 			
 			if (it is ConsumeItems) {
-				it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emoji()}/sec").scaleFont(fontScale).row() }
-			} else if (it is ConsumeLiquid) {
-				addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.liquid.emoji()}/sec").scaleFont(fontScale).row()
+				it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emoji()}/sec").scaleFont(fontScale).growX().left().row() }
+			} else {
+				addLabel(when {
+					it is ConsumeLiquid -> "${(timeScale * it.amount * 60f).toFixed(2)} ${it.liquid.emoji()}/sec"
+					
+					it is ConsumePower -> "${(timeScale * it.usage * 60f).toFixed(2)} power/sec" //power is only affected by time scale
+					
+					else -> "<Unknown: ${it::class.simpleName}>"
+				}).scaleFont(fontScale).growX().left().row()
 			}
 		}
 	}
