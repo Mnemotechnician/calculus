@@ -3,11 +3,11 @@
 #!BRANCH master
 
 name: "calculus"
-description: "wip"
+description: "A mindustry mod that adds several utility windows.\n\nYou can create windows by pressing the buttons on the master window.\n\nThis mod is created with the help of MKUI library."
 displayName: "[Kotlin] Calculus"
 author: "Мнемотехник"
 minGameVersion: "135"
-version: "0.1"
+version: "0.2"
 
 main: "com.github.mnemotechnician.calculus.CalculusMod"
 hidden: true

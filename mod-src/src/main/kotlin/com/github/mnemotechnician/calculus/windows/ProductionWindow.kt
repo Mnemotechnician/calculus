@@ -133,14 +133,18 @@ open class ProductionWindow : Window() {
 							val maxSpeed = (60f * block.size * block.size * timeScale) / (block.drillTime + block.hardnessDrillMultiplier * item.hardness)
 							
 							statEntry("X") {
-								addLabel("Produces ${maxSpeed.toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).row()
+								addLabel("Produces ${maxSpeed.toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).growX().left().row()
+								
+								displayCons(block, maxSpeed, true)
 							}
 							
 							block.consumes.optionals().forEach {
 								if (it is ConsumeLiquid) {
 									statEntry(it.liquid.emoji()) {
 										val boost = block.liquidBoostIntensity * block.liquidBoostIntensity
-										addLabel("Produces ${(maxSpeed * boost).toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale)
+										addLabel("Produces ${(maxSpeed * boost).toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).growX().left().row()
+										
+										displayCons(block, maxSpeed, true)
 									}
 								}
 							}
@@ -157,18 +161,14 @@ open class ProductionWindow : Window() {
 								val maxSpeed = (60f * timeScale) / block.craftTime
 								addLabel("Produces ${(maxSpeed * stack.amount).toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).row()
 								
-								addLabel("Consumes:").scaleFont(fontScale).row()
-								
-								addTable {
-									displayCons(block, maxSpeed)
-								}.growX().marginLeft(20f)
+								displayCons(block, maxSpeed)
 							}
 						}
 					}
 				} else if (block is Separator) {
 					//separator and disassembler
 					val output = block.results.find { it.item == item }
-					val totalAmount = block.results.fold(0) { v, stack -> v + stack.amount } //total amount of outputted items
+					val totalAmount = block.results.fold(0) { v, stack -> v + stack.amount } //total amount of outputted items. todo: can i not allocate an Integer?
 					
 					if (output != null) {
 						statsCategory(block) {
@@ -180,11 +180,7 @@ open class ProductionWindow : Window() {
 								
 								addLabel("Chance: ${((output.amount * 100f) / totalAmount).toFixed(1)}%, ${output.amount}/$totalAmount").scaleFont(fontScale).row()
 								
-								addLabel("Consumes:").scaleFont(fontScale).row()
-								
-								addTable {
-									displayCons(block, maxSpeed)
-								}.growX().marginLeft(20f)
+								displayCons(block, maxSpeed)
 							}
 						}
 					}
@@ -215,7 +211,7 @@ open class ProductionWindow : Window() {
 	protected inline fun Table.statEntry(left: String, crossinline constructor: Table.() -> Unit) = addTable {
 		left()
 		
-		addLabel(left).width(20f).scaleFont(fontScale).center()
+		addLabel(left).width(15f).scaleFont(fontScale).center()
 		
 		vsplitter(Color.gray)
 		
@@ -227,23 +223,32 @@ open class ProductionWindow : Window() {
 	
 	/** Utility function: displays block's non-optional cons on the table */
 	protected fun Table.displayCons(block: Block, maxSpeed: Float, ignoreOptional: Boolean = true) {
-		left()
+		val cons = block.consumes.all()
+		if ((ignoreOptional && !cons.any { !it.isOptional }) || (!ignoreOptional && cons.isEmpty())) return;
 		
-		block.consumes.all().forEach {
-			if (ignoreOptional && it.isOptional) return@forEach
+		addTable {
+			left()
 			
-			if (it is ConsumeItems) {
-				it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emoji()}/sec").scaleFont(fontScale).growX().left().row() }
-			} else {
-				addLabel(when {
-					it is ConsumeLiquid -> "${(timeScale * it.amount * 60f).toFixed(2)} ${it.liquid.emoji()}/sec"
+			addLabel("Consumes:").growX().left().scaleFont(fontScale).row()
+			
+			addTable {
+				cons.forEach {
+					if (ignoreOptional && it.isOptional) return@forEach
 					
-					it is ConsumePower -> "${(timeScale * it.usage * 60f).toFixed(2)} power/sec" //power is only affected by time scale
-					
-					else -> "<Unknown: ${it::class.simpleName}>"
-				}).scaleFont(fontScale).growX().left().row()
-			}
-		}
+					if (it is ConsumeItems) {
+						it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emoji()}/sec").scaleFont(fontScale).growX().left().row() }
+					} else {
+						addLabel(when {
+							it is ConsumeLiquid -> "${(timeScale * it.amount * 60f).toFixed(2)} ${it.liquid.emoji()}/sec"
+							
+							it is ConsumePower -> "${(timeScale * it.usage * 60f).toFixed(2)} power/sec" //power is only affected by time scale
+							
+							else -> "<Unknown: ${it::class.simpleName}>"
+						}).scaleFont(fontScale).growX().left().row()
+					}
+				}
+			}.growX().marginLeft(20f)
+		}.growX()
 	}
 	
 	/** Simulates a click event on the last selected block, if present */

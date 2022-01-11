@@ -16,10 +16,13 @@ import com.github.mnemotechnician.calculus.windows.*
 
 class CalculusMod : Mod() {
 	
-	val production = ProductionWindow()
+	val master = MasterWindow()
 
 	init {
-		WindowManager.createWindow(production)
+		WindowManager.createWindow(master)
+		
+		master.addWindow("production", ProductionWindow::class.java)
+		master.addWindow("calculator", CalculatorWindow::class.java)
 		
 		Events.run(EventType.ClientLoadEvent::class.java) {
 			Updater.checkUpdates(this)
