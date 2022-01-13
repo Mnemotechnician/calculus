@@ -72,10 +72,8 @@ task<Jar>("release") {
 	)
 
 	doLast {
-		delete {
-			delete("$buildDir/libs/${jarName}-desktop.jar")
-			delete("$buildDir/libs/${jarName}-android.jar")
-		}
+		delete { delete("$buildDir/libs/${jarName}-desktop.jar") }
+		delete { delete("$buildDir/libs/${jarName}-android.jar") }
 	}
 }
 

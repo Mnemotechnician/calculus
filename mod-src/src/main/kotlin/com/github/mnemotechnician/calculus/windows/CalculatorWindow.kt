@@ -24,10 +24,10 @@ class CalculatorWindow : Window() {
 		table.apply {
 			addTable {
 				//expression field
-				addLabel({ expression }).scaleFont(1.3f).growX().row()
+				addLabel({ expression }).scaleFont(1.3f).growX().maxHeight(400f).row()
 				
 				//result field
-				resultLabel = addLabel({ result }).color(Color.gray).growX().get()
+				resultLabel = addLabel({ result }).color(Color.gray).growX().maxHeight(200f).get()
 			}.growX().padLeft(5f).padRight(5f)
 			
 			hsplitter(Color.gray, 10f)

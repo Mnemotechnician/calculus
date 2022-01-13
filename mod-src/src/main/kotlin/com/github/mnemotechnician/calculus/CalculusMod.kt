@@ -23,6 +23,7 @@ class CalculusMod : Mod() {
 		
 		master.addWindow("production", ProductionWindow::class.java)
 		master.addWindow("calculator", CalculatorWindow::class.java)
+		master.addWindow("console", ConsoleWindow::class.java)
 		
 		Events.run(EventType.ClientLoadEvent::class.java) {
 			Updater.checkUpdates(this)
