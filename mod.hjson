@@ -1,6 +1,6 @@
 #!REPO "mnemotechnician/calculus"
-#!VERSION "0.3"
-#!BRANCH master
+#!VERSION 0.3
+#!BRANCH "master"
 
 name: "calculus"
 description: "A mindustry mod that adds several utility windows.\n\nYou can create windows by pressing the buttons on the master window.\n\nThis mod is created with the help of MKUI library."
