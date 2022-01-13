@@ -1,5 +1,5 @@
-#!REPO mnemotechnician/calculus
-#!VERSION 0.3
+#!REPO "mnemotechnician/calculus"
+#!VERSION "0.3"
 #!BRANCH master
 
 name: "calculus"
