@@ -17,7 +17,7 @@ class ConsoleWindow : Window() {
 	override var closeable = true
 
 	lateinit var field: TextField
-	var log = "console result will appear here"
+	var log = StringBuilder(500).append("console output will appear here\n")
 	
 	override fun onCreate() {
 		table.apply {
@@ -29,22 +29,28 @@ class ConsoleWindow : Window() {
 				textButton(">>") {
 					try {
 						Log.info("JS \$ ${field.text}")
+						log.append("[blue]JS $[] ").append(field.text).append('\n')
+						
 						val result = Vars.mods.scripts.runConsole(field.text)
 						Log.info("> $result")
-						log = result
+						log.append("[yellow]>[]").append(result).append('\n')
 					} catch (e: Throwable) {
 						val result = e.stackTraceToString()
 						Log.err(e)
-						log = result
+						log.append("[red]ERROR >[]").append(result).append('\n')
 					}
 				}.row()
 			}.growX().row()
 			
-			scrollPane {
-				left().top()
-				
-				addLabel({ log }).top().left().growX().height(250f)
-			}.grow()
+			addTable {
+				scrollPane {
+					left().top()
+					
+					it.setForceScroll(true, true)
+					
+					addLabel({ log }).color(Color.gray).top().left()
+				}.grow()//.maxWidth(200f)
+			}.fillX().height(300f)
 		}.margin(5f)
 	}
 	

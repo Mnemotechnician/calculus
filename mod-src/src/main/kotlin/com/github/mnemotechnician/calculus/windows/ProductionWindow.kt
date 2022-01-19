@@ -1,5 +1,6 @@
 package com.github.mnemotechnician.calculus.windows
 
+import arc.util.*
 import arc.util.pooling.*
 import arc.graphics.*
 import arc.struct.*
@@ -32,7 +33,7 @@ open class ProductionWindow : Window() {
 	var timeScale = 1f //overdrive
 	var lastItem: Item? = null
 	var lastBlock: Block? = null
-	var lastBlockButton: TextButton? = null
+	var lastBlockButton: Button? = null
 	
 	lateinit var mineableItems: ObjectSet<Item>
 	
@@ -49,12 +50,14 @@ open class ProductionWindow : Window() {
 				scrollPane {
 					buttonGroup {
 						Vars.content.items().each {
-							textButton(it.emoji(), Styles.togglet) {
+							customButton({
+								addImage(it.fullIcon).get().setScaling(Scaling.bounded)
+							}) {
 								if (it != lastItem) {
 									lastItem = it
 									rebuildBlocks(it)
 								}
-							}.marginBottom(5f).scaleButtonFont(iconScale)
+							}.marginBottom(5f)
 							
 							row()
 						}
@@ -189,12 +192,14 @@ open class ProductionWindow : Window() {
 		}
 		
 		//press the first button automatically
-		group.get().childAs<TextButton>(0).fireClick()
+		group.get().childAsOrNull<TextButton>(0)?.fireClick()
 	}
 	
 	/** Utility function — creates a button with block icon that reconstructs the stats table on click */
 	protected inline fun Table.statsCategory(block: Block, crossinline lambda: Table.() -> Unit) {
-		textButton(block.emoji(), Styles.togglet) {
+		customButton({
+			addImage(block.fullIcon).get().setScaling(Scaling.bounded)
+		}) {
 			lastBlockButton = this
 			
 			if (lastBlock != block) {
@@ -204,7 +209,7 @@ open class ProductionWindow : Window() {
 				statsTable.addLabel("${block.emoji()} ${block.localizedName}").scaleFont(fontScale).marginBottom(50f).row()
 				statsTable.lambda()
 			}
-		}.scaleButtonFont(iconScale).row()
+		}.size(50f).row()
 	}
 	
 	/** Utility function — constructs a stat entry */

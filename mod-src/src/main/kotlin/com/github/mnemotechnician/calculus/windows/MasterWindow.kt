@@ -11,7 +11,7 @@ import com.github.mnemotechnician.mkui.windows.*
 
 class MasterWindow : Window() {
 	
-	override var name = "windows"
+	override var name = "master window"
 	override var closeable = false
 
 	lateinit var buttonsTable: Table
@@ -50,7 +50,9 @@ class MasterWindow : Window() {
 			} catch (e: Exception) {
 				Vars.ui.showException("Couldn't instantinate window $name!", e)
 			}
-		}
+		}.also {
+			if (buttonsTable.children.size % 2 == 0) it.row()
+		}.fill()
 	}
 	
 }

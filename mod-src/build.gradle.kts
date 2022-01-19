@@ -16,7 +16,7 @@ dependencies {
 	compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
 	compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion")
 	
-	implementation("com.github.mnemotechnician:mkui:16")
+	implementation("com.github.mnemotechnician:mkui:24")
 	implementation(files("../lib/Autoupdate-lib.jar"))
 }
 
