@@ -14,6 +14,7 @@ import mindustry.type.*
 import mindustry.world.*
 import mindustry.world.consumers.*
 import mindustry.content.*
+import mindustry.ctype.*
 import mindustry.world.blocks.production.*
 import mindustry.world.blocks.defense.*
 import com.github.mnemotechnician.mkui.*
@@ -51,8 +52,8 @@ open class ProductionWindow : Window() {
 					buttonGroup {
 						Vars.content.items().each {
 							customButton({
-								addImage(it.fullIcon).get().setScaling(Scaling.bounded)
-							}) {
+								addImage(it.fullIcon).scaleImage(Scaling.bounded)
+							}, Styles.togglet) {
 								if (it != lastItem) {
 									lastItem = it
 									rebuildBlocks(it)
@@ -82,33 +83,45 @@ open class ProductionWindow : Window() {
 			//stats. generated when the user clicks on a block.
 			addTable {
 				addLabel("stats").scaleFont(fontScale).row()
-				//overdrives
-				buttonGroup {
-					textButton("X", Styles.togglet) {
-						timeScale = 1f
-						redoLast()
-					}.scaleButtonFont(fontScale)
-					
-					Vars.content.blocks().each {
-						if (it is OverdriveProjector) {
-							textButton(it.emoji(), Styles.togglet) {
-								timeScale = it.speedBoost
-								redoLast()
-							}.scaleButtonFont(fontScale)
-							
-							//if this overdrive supports phase boost, include boosted as separate entry
-							if (it.hasBoost) {
-								textButton("${it.emoji()} ${Items.phaseFabric.emoji()}", Styles.togglet) {
-									timeScale = it.speedBoost + it.speedBoostPhase
-									redoLast()
-								}.scaleButtonFont(fontScale)
-							}
-						}
-					}
-				}
-				.growX().visible { lastBlock != null }
 				
-				hsplitter()
+				addTable {
+					scrollPane {
+						it.setForceScroll(true, false)
+						
+						//overdrives
+						buttonGroup {
+							textButton("X", Styles.togglet) {
+								timeScale = 1f
+								redoLast()
+							}.scaleButtonFont(fontScale).growY()
+							
+							Vars.content.blocks().each {
+								if (it is OverdriveProjector) {
+									customButton({
+										addImage(it.fullIcon).size(30f)
+									}, Styles.togglet) {
+										timeScale = it.speedBoost
+										redoLast()
+									}
+									
+									//if this overdrive supports phase boost, include boosted as separate entry
+									if (it.hasBoost) {
+										customButton({
+											addImage(it.fullIcon).size(30f)
+											addImage(Items.phaseFabric.fullIcon).size(30f)
+										}, Styles.togglet) {
+											timeScale = it.speedBoost + it.speedBoostPhase
+											redoLast()
+										}.growY()
+									}
+								}
+							}
+						}.fillX()
+					}.fillX()
+				}
+				.fillX().visible { lastBlock != null }
+				
+				hsplitter().visible { lastBlock != null }
 				
 				scrollPane {
 					top().defaults().growX().top()
@@ -136,7 +149,7 @@ open class ProductionWindow : Window() {
 							val maxSpeed = (60f * block.size * block.size * timeScale) / (block.drillTime + block.hardnessDrillMultiplier * item.hardness)
 							
 							statEntry("X") {
-								addLabel("Produces ${maxSpeed.toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).growX().left().row()
+								addLabel("Produces ${maxSpeed.toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).growX().left().row()
 								
 								displayCons(block, maxSpeed, true)
 							}
@@ -145,7 +158,7 @@ open class ProductionWindow : Window() {
 								if (it is ConsumeLiquid) {
 									statEntry(it.liquid.emoji()) {
 										val boost = block.liquidBoostIntensity * block.liquidBoostIntensity
-										addLabel("Produces ${(maxSpeed * boost).toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).growX().left().row()
+										addLabel("Produces ${(maxSpeed * boost).toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).growX().left().row()
 										
 										displayCons(block, maxSpeed, true)
 									}
@@ -162,7 +175,7 @@ open class ProductionWindow : Window() {
 								defaults().growX().left()
 								
 								val maxSpeed = (60f * timeScale) / block.craftTime
-								addLabel("Produces ${(maxSpeed * stack.amount).toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).row()
+								addLabel("Produces ${(maxSpeed * stack.amount).toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).row()
 								
 								displayCons(block, maxSpeed)
 							}
@@ -179,7 +192,7 @@ open class ProductionWindow : Window() {
 								defaults().growX().left()
 								
 								val maxSpeed = (output.amount * 60 * timeScale) / (block.craftTime * totalAmount)
-								addLabel("Produces around ${maxSpeed.toFixed(2)} ${item.emoji()}/sec").scaleFont(fontScale).row()
+								addLabel("Produces around ${maxSpeed.toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).row()
 								
 								addLabel("Chance: ${((output.amount * 100f) / totalAmount).toFixed(1)}%, ${output.amount}/$totalAmount").scaleFont(fontScale).row()
 								
@@ -192,14 +205,14 @@ open class ProductionWindow : Window() {
 		}
 		
 		//press the first button automatically
-		group.get().childAsOrNull<TextButton>(0)?.fireClick()
+		group.get().childAsOrNull<Button>(0)?.fireClick()
 	}
 	
 	/** Utility function — creates a button with block icon that reconstructs the stats table on click */
 	protected inline fun Table.statsCategory(block: Block, crossinline lambda: Table.() -> Unit) {
 		customButton({
-			addImage(block.fullIcon).get().setScaling(Scaling.bounded)
-		}) {
+			addImage(block.fullIcon)
+		}, Styles.togglet) {
 			lastBlockButton = this
 			
 			if (lastBlock != block) {
@@ -241,10 +254,10 @@ open class ProductionWindow : Window() {
 					if (ignoreOptional && it.isOptional) return@forEach
 					
 					if (it is ConsumeItems) {
-						it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emoji()}/sec").scaleFont(fontScale).growX().left().row() }
+						it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emojiOrName()}/sec").scaleFont(fontScale).growX().left().row() }
 					} else {
 						addLabel(when {
-							it is ConsumeLiquid -> "${(timeScale * it.amount * 60f).toFixed(2)} ${it.liquid.emoji()}/sec"
+							it is ConsumeLiquid -> "${(timeScale * it.amount * 60f).toFixed(2)} ${it.liquid.emojiOrName()}/sec"
 							
 							it is ConsumePower -> "${(timeScale * it.usage * 60f).toFixed(2)} power/sec" //power is only affected by time scale
 							
@@ -255,6 +268,8 @@ open class ProductionWindow : Window() {
 			}.growX().marginLeft(20f)
 		}.growX()
 	}
+	
+	fun UnlockableContent.emojiOrName() = if (this.hasEmoji()) this.emoji() else this.localizedName;
 	
 	/** Simulates a click event on the last selected block, if present */
 	protected fun redoLast() {

@@ -33,11 +33,11 @@ class ConsoleWindow : Window() {
 						
 						val result = Vars.mods.scripts.runConsole(field.text)
 						Log.info("> $result")
-						log.append("[yellow]>[]").append(result).append('\n')
+						log.append("[yellow]>[] ").append(result).append('\n')
 					} catch (e: Throwable) {
 						val result = e.stackTraceToString()
 						Log.err(e)
-						log.append("[red]ERROR >[]").append(result).append('\n')
+						log.append("[red]ERROR >[] ").append(result).append('\n')
 					}
 				}.row()
 			}.growX().row()
@@ -48,8 +48,8 @@ class ConsoleWindow : Window() {
 					
 					it.setForceScroll(true, true)
 					
-					addLabel({ log }).color(Color.gray).top().left()
-				}.grow()//.maxWidth(200f)
+					addLabel({ log }).grow().color(Color.lightGray).top().left()
+				}.grow()
 			}.fillX().height(300f)
 		}.margin(5f)
 	}
