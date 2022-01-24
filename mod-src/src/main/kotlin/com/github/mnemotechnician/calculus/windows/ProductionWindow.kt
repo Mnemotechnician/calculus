@@ -85,7 +85,7 @@ open class ProductionWindow : Window() {
 				addLabel("stats").scaleFont(fontScale).row()
 				
 				addTable {
-					scrollPane {
+					limitedScrollPane {
 						it.setForceScroll(true, false)
 						
 						//overdrives
@@ -117,9 +117,9 @@ open class ProductionWindow : Window() {
 								}
 							}
 						}.fillX()
-					}.fillX()
-				}
-				.fillX().visible { lastBlock != null }
+					}.growX().height(60f)
+				}.growX()
+				.growX().visible { lastBlock != null }
 				
 				hsplitter().visible { lastBlock != null }
 				
@@ -149,7 +149,7 @@ open class ProductionWindow : Window() {
 							val maxSpeed = (60f * block.size * block.size * timeScale) / (block.drillTime + block.hardnessDrillMultiplier * item.hardness)
 							
 							statEntry("X") {
-								addLabel("Produces ${maxSpeed.toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).growX().left().row()
+								addLabel("Produces ${maxSpeed.toFixed(2)} ${item.emojiOrName()}/sec", alignment = Align.left).scaleFont(fontScale).growX().left().row()
 								
 								displayCons(block, maxSpeed, true)
 							}
@@ -158,7 +158,9 @@ open class ProductionWindow : Window() {
 								if (it is ConsumeLiquid) {
 									statEntry(it.liquid.emoji()) {
 										val boost = block.liquidBoostIntensity * block.liquidBoostIntensity
-										addLabel("Produces ${(maxSpeed * boost).toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).growX().left().row()
+										addLabel("Produces ${(maxSpeed * boost).toFixed(2)} ${item.emojiOrName()}/sec", alignment = Align.left).scaleFont(fontScale).growX().left()
+										
+										row()
 										
 										displayCons(block, maxSpeed, true)
 									}
@@ -175,7 +177,7 @@ open class ProductionWindow : Window() {
 								defaults().growX().left()
 								
 								val maxSpeed = (60f * timeScale) / block.craftTime
-								addLabel("Produces ${(maxSpeed * stack.amount).toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).row()
+								addLabel("Produces ${(maxSpeed * stack.amount).toFixed(2)} ${item.emojiOrName()}/sec", alignment = Align.left).scaleFont(fontScale).row()
 								
 								displayCons(block, maxSpeed)
 							}
@@ -192,9 +194,9 @@ open class ProductionWindow : Window() {
 								defaults().growX().left()
 								
 								val maxSpeed = (output.amount * 60 * timeScale) / (block.craftTime * totalAmount)
-								addLabel("Produces around ${maxSpeed.toFixed(2)} ${item.emojiOrName()}/sec").scaleFont(fontScale).row()
+								addLabel("Produces around ${maxSpeed.toFixed(2)} ${item.emojiOrName()}/sec", alignment = Align.left).scaleFont(fontScale).row()
 								
-								addLabel("Chance: ${((output.amount * 100f) / totalAmount).toFixed(1)}%, ${output.amount}/$totalAmount").scaleFont(fontScale).row()
+								addLabel("Chance: ${((output.amount * 100f) / totalAmount).toFixed(1)}%, ${output.amount}/$totalAmount", alignment = Align.left).scaleFont(fontScale).row()
 								
 								displayCons(block, maxSpeed)
 							}
@@ -219,7 +221,7 @@ open class ProductionWindow : Window() {
 				statsTable.clearChildren()
 				lastBlock = block
 				
-				statsTable.addLabel("${block.emoji()} ${block.localizedName}").scaleFont(fontScale).marginBottom(50f).row()
+				statsTable.addLabel("${block.emoji()} ${block.localizedName}", alignment = Align.left).scaleFont(fontScale).marginBottom(50f).row()
 				statsTable.lambda()
 			}
 		}.size(50f).row()
@@ -229,7 +231,7 @@ open class ProductionWindow : Window() {
 	protected inline fun Table.statEntry(left: String, crossinline constructor: Table.() -> Unit) = addTable {
 		left()
 		
-		addLabel(left).width(15f).scaleFont(fontScale).center()
+		addLabel(left, alignment = Align.left).width(15f).scaleFont(fontScale).center()
 		
 		vsplitter(Color.gray)
 		
@@ -247,14 +249,16 @@ open class ProductionWindow : Window() {
 		addTable {
 			left()
 			
-			addLabel("Consumes:").growX().left().scaleFont(fontScale).row()
+			addLabel("Consumes:", alignment = Align.left).growX().left().scaleFont(fontScale).row()
 			
 			addTable {
 				cons.forEach {
 					if (ignoreOptional && it.isOptional) return@forEach
 					
 					if (it is ConsumeItems) {
-						it.items.forEach { addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emojiOrName()}/sec").scaleFont(fontScale).growX().left().row() }
+						it.items.forEach {
+							addLabel("${(maxSpeed * it.amount).toFixed(2)} ${it.item.emojiOrName()}/sec", alignment = Align.left).scaleFont(fontScale).growX().left().row()
+						}
 					} else {
 						addLabel(when {
 							it is ConsumeLiquid -> "${(timeScale * it.amount * 60f).toFixed(2)} ${it.liquid.emojiOrName()}/sec"
@@ -262,7 +266,7 @@ open class ProductionWindow : Window() {
 							it is ConsumePower -> "${(timeScale * it.usage * 60f).toFixed(2)} power/sec" //power is only affected by time scale
 							
 							else -> "<Unknown: ${it::class.simpleName}>"
-						}).scaleFont(fontScale).growX().left().row()
+						}, alignment = Align.left).scaleFont(fontScale).growX().left().row()
 					}
 				}
 			}.growX().marginLeft(20f)
