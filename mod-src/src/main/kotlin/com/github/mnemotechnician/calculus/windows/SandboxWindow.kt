@@ -90,7 +90,13 @@ class SandboxWindow : Window() {
 						addImage({ currentUnit?.fullIcon ?: Icon.none.region }, scaling = Scaling.bounded).size(30f)
 						
 						textButton("spawn", Styles.nodet) {
-							currentUnit?.spawn(currentTeam, Vars.player.x, Vars.player.y)
+							currentUnit?.let {
+								val u = it.create(currentTeam)
+								u.set(Vars.player.x, Vars.player.y)
+								u.dead = true //workaround: this doesn't allow the unit to be destroyed because of unit cap
+								u.add()
+								u.dead = false
+							}
 						}.update {
 							it.setColor(if (currentUnit == null) Color.gray else Color.white)
 						}.padLeft(5f)
