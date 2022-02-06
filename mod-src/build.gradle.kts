@@ -16,7 +16,7 @@ dependencies {
 	compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
 	compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion")
 	
-	implementation("com.github.mnemotechnician:mkui:33")
+	implementation("com.github.mnemotechnician:mkui:34")
 	implementation(files("../lib/Autoupdate-lib.jar"))
 }
 
@@ -30,23 +30,32 @@ task("jarAndroid") {
 			throw GradleException("""
 				No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.
 				Note: if the gradle daemon has been started before ANDROID_HOME env variable was defined, it won't be able to read this variable.
-				In this case you have to run "./gradlew stop" and try again
+				In this case you have to run "./gradlew --stop" and try again
 			""".trimIndent());
 		}
 		
 		println("searching for an android sdk... ")
-		val platformRoot = File("$sdkRoot/platforms/").walkTopDown().findLast { 
+		val platformRoot = File("$sdkRoot/platforms/").listFiles().filter { 
 			val fi = File(it, "android.jar")
-			if (fi.exists()) {
+			val valid = fi.exists() && it.name.startsWith("android-")
+			
+			if (valid) {
 				print(it)
 				println(" — OK.")
 			}
-			fi.exists()
+			return@filter valid
+		}.maxByOrNull {
+			it.name.substring("android-".length).toIntOrNull() ?: -1
 		}
 		
-		if (platformRoot == null) throw GradleException("No android.jar found. Ensure that you have an Android platform installed. (platformRoot = $platformRoot)")
+		if (platformRoot == null) {
+			throw GradleException("No android.jar found. Ensure that you have an Android platform installed. (platformRoot = $platformRoot)")
+		} else {
+			println("using ${platformRoot.absolutePath}")
+		}
 		
-		//collect dependencies needed to translate java 8+ bytecode code to android-compatible bytecode (yeah, android's dvm and art do be sucking)
+		
+		//collect dependencies needed to translate java 8 bytecode code to android-compatible bytecode (yeah, android's dvm and art do be sucking)
 		val dependencies = (configurations.compileClasspath.files + configurations.runtimeClasspath.files + File(platformRoot, "android.jar")).map { it.path }
 		val dependenciesStr = Array<String>(dependencies.size * 2) {
 			if (it % 2 == 0) "--classpath" else dependencies.elementAt(it / 2)

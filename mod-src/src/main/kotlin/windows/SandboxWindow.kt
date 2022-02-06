@@ -100,7 +100,7 @@ class SandboxWindow : Window() {
 								val unit = it
 								
 								customButton({
-									addImage(it.fullIcon, scaling = Scaling.bounded).size(30f)
+									addImage(it.uiIcon, scaling = Scaling.bounded).size(30f)
 								}) {
 									currentUnit = unit
 								}.fillX().apply {
@@ -209,7 +209,7 @@ class SandboxWindow : Window() {
 	/** Utility function: creates a spawn button with a coordinate provider */
 	protected inline fun Table.spawnButton(crossinline currentUnit: () -> UnitType?, crossinline currentTeam: () -> Team, crossinline x: () -> Float, crossinline y: () -> Float): Cell<Table> {
 		return addTable {
-			addImage({ currentUnit()?.fullIcon ?: Icon.none.region }, scaling = Scaling.bounded).size(30f)
+			addImage({ currentUnit()?.uiIcon ?: Icon.none.region }, scaling = Scaling.bounded).size(30f)
 			
 			textButton("spawn", Styles.nodet) {
 				currentUnit()?.let {

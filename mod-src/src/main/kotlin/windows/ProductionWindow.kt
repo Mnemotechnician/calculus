@@ -52,7 +52,7 @@ open class ProductionWindow : Window() {
 					buttonGroup {
 						Vars.content.items().each {
 							customButton({
-								addImage(it.fullIcon).scaleImage(Scaling.bounded)
+								addImage(it.uiIcon).scaleImage(Scaling.bounded)
 							}, Styles.togglet) {
 								if (it != lastItem) {
 									lastItem = it
@@ -98,7 +98,7 @@ open class ProductionWindow : Window() {
 							Vars.content.blocks().each {
 								if (it is OverdriveProjector) {
 									customButton({
-										addImage(it.fullIcon).size(30f)
+										addImage(it.uiIcon).size(30f)
 									}, Styles.togglet) {
 										timeScale = it.speedBoost
 										redoLast()
@@ -107,8 +107,8 @@ open class ProductionWindow : Window() {
 									//if this overdrive supports phase boost, include boosted as separate entry
 									if (it.hasBoost) {
 										customButton({
-											addImage(it.fullIcon).size(30f)
-											addImage(Items.phaseFabric.fullIcon).size(30f)
+											addImage(it.uiIcon).size(30f)
+											addImage(Items.phaseFabric.uiIcon).size(30f)
 										}, Styles.togglet) {
 											timeScale = it.speedBoost + it.speedBoostPhase
 											redoLast()
@@ -213,7 +213,7 @@ open class ProductionWindow : Window() {
 	/** Utility function — creates a button with block icon that reconstructs the stats table on click */
 	protected inline fun Table.statsCategory(block: Block, crossinline lambda: Table.() -> Unit) {
 		customButton({
-			addImage(block.fullIcon)
+			addImage(block.uiIcon)
 		}, Styles.togglet) {
 			lastBlockButton = this
 			
