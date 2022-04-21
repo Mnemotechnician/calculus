@@ -52,10 +52,12 @@ class MasterWindow : Window() {
 	protected fun createButton(name: String, iconName: String? = null, window: Class<out Window>): Cell<Button> {
 		return buttonsTable.customButton(button@ {
 			addStack {
-				this += Image(Tex.whiteui).apply {
-					setFillParent(true)
-				}.update {
-					child(0).setColor(if (this@button.isPressed) pressedColor else unpressedColor)
+				this += Image(Tex.whiteui).also {
+					it.setFillParent(true)
+
+					it.update {
+						it.setColor(if (this@button.isPressed) pressedColor else unpressedColor)
+					}
 				}
 				
 				this += createTable {

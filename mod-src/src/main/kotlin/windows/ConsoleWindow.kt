@@ -48,7 +48,7 @@ class ConsoleWindow : Window() {
 					
 					it.setForceScroll(true, true)
 					
-					addLabel({ log }).grow().color(Color.lightGray).top().left()
+					addLabel(provider = { log }, alignment = Align.left).grow().color(Color.lightGray).top().left()
 				}.grow()
 			}.fillX().height(300f)
 		}.margin(5f)

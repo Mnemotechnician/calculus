@@ -93,7 +93,7 @@ open class ProductionWindow : Window() {
 							textButton("X", Styles.togglet) {
 								timeScale = 1f
 								redoLast()
-							}.scaleButtonFont(fontScale).growY()
+							}.scaleFont(fontScale).growY()
 							
 							Vars.content.blocks().each {
 								if (it is OverdriveProjector) {
@@ -207,7 +207,7 @@ open class ProductionWindow : Window() {
 		}
 		
 		//press the first button automatically
-		group.get().childAsOrNull<Button>(0)?.fireClick()
+		group.get().childOrNull<Button>(0)?.fireClick()
 	}
 	
 	/** Utility function — creates a button with block icon that reconstructs the stats table on click */

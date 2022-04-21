@@ -6,6 +6,7 @@ val mindustryVersion = "v135"
 val jarName = "calculus"
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 	maven("https://jitpack.io")
 }
@@ -16,7 +17,7 @@ dependencies {
 	compileOnly("com.github.Anuken.Arc:arc-core:$mindustryVersion")
 	compileOnly("com.github.Anuken.Mindustry:core:$mindustryVersion")
 	
-	implementation("com.github.mnemotechnician:mkui:34")
+	implementation("com.github.mnemotechnician:mkui:38")
 	implementation(files("../lib/Autoupdate-lib.jar"))
 }
 
