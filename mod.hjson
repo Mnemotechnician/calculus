@@ -1,5 +1,5 @@
 #!REPO "mnemotechnician/calculus"
-#!VERSION 1.0
+#!VERSION 1.1
 #!BRANCH "master"
 
 name: "calculus"
@@ -7,7 +7,7 @@ description: "A mindustry mod that adds several utility windows.\n\nYou can crea
 displayName: "[Kotlin] Calculus"
 author: "Мнемотехник"
 minGameVersion: "135"
-version: "1.0"
+version: "1.1"
 
 main: "com.github.mnemotechnician.calculus.CalculusMod"
 hidden: true
